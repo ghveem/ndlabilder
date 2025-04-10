@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "ndla-bildesok",
   "version": "1.0.0",
   "scripts": {

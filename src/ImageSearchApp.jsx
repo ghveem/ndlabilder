@@ -41,7 +41,8 @@ export default function ImageSearchApp() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">NDLA Bildesøk</h1>
+      <h1 className="text-3xl font-bold mb-6">NDLA bildesøk</h1>
+      <p>Uoffisiell app.</p>
 
       <div className="flex gap-2 mb-6">
         <input
