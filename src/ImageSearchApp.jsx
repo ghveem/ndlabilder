@@ -1,14 +1,11 @@
-// ImageSearchApp.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
   Button,
   Modal,
   Input,
-  Heading,
   Select,
 } from "@ndla/ui";
-import '@ndla/ui/scss/index.scss';
 
 const PAGE_SIZE = 12;
 
@@ -23,7 +20,11 @@ export default function ImageSearchApp() {
   const [tagFilter, setTagFilter] = useState("");
   const [creatorFilter, setCreatorFilter] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
-  const [filterStats, setFilterStats] = useState({ languages: {}, tags: {}, creators: {} });
+  const [filterStats, setFilterStats] = useState({
+    languages: {},
+    tags: {},
+    creators: {},
+  });
 
   useEffect(() => {
     if (query) handleSearch();
@@ -32,16 +33,19 @@ export default function ImageSearchApp() {
   const handleSearch = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("https://api.ndla.no/image-api/v3/images", {
-        params: {
-          query,
-          language: "*",
-          fallback: false,
-          includeCopyrighted: licenseFilter !== "public-domain",
-          page,
-          pageSize: PAGE_SIZE,
-        },
-      });
+      const response = await axios.get(
+        "https://api.ndla.no/image-api/v3/images",
+        {
+          params: {
+            query,
+            language: "*",
+            fallback: false,
+            includeCopyrighted: licenseFilter !== "public-domain",
+            page,
+            pageSize: PAGE_SIZE,
+          },
+        }
+      );
 
       let filteredResults = response.data.results || [];
 
@@ -54,7 +58,9 @@ export default function ImageSearchApp() {
 
       if (tagFilter)
         filteredResults = filteredResults.filter((item) =>
-          item.tags?.tags?.some((t) => t.toLowerCase().includes(tagFilter.toLowerCase()))
+          item.tags?.tags?.some((t) =>
+            t.toLowerCase().includes(tagFilter.toLowerCase())
+          )
         );
 
       if (creatorFilter)
@@ -67,6 +73,7 @@ export default function ImageSearchApp() {
       const languageCounts = {};
       const tagCounts = {};
       const creatorCounts = {};
+
       response.data.results.forEach((item) => {
         const lang = item.language || "ukjent";
         languageCounts[lang] = (languageCounts[lang] || 0) + 1;
@@ -82,7 +89,11 @@ export default function ImageSearchApp() {
 
       setResults(filteredResults);
       setTotalCount(response.data.totalCount || 0);
-      setFilterStats({ languages: languageCounts, tags: tagCounts, creators: creatorCounts });
+      setFilterStats({
+        languages: languageCounts,
+        tags: tagCounts,
+        creators: creatorCounts,
+      });
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -93,14 +104,10 @@ export default function ImageSearchApp() {
 
   return (
     <div className="ndla-container">
-      <Heading level="1">Bildesøk</Heading>
+      <h1 className="c-heading c-heading--level1">Bildesøk</h1>
 
       <div className="ndla-grid ndla-grid--spacing mb-4">
-        <Input
-          label="Søkeord"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
+        <Input label="Søkeord" value={query} onChange={(e) => setQuery(e.target.value)} />
         <Select
           label="Lisensfilter"
           value={licenseFilter}
@@ -112,21 +119,9 @@ export default function ImageSearchApp() {
           <option value="all">Alle lisenser</option>
           <option value="public-domain">Kun offentlig eiendom</option>
         </Select>
-        <Input
-          label="Filtrer språk"
-          value={languageFilter}
-          onChange={(e) => setLanguageFilter(e.target.value)}
-        />
-        <Input
-          label="Filtrer tags"
-          value={tagFilter}
-          onChange={(e) => setTagFilter(e.target.value)}
-        />
-        <Input
-          label="Filtrer skaper"
-          value={creatorFilter}
-          onChange={(e) => setCreatorFilter(e.target.value)}
-        />
+        <Input label="Filtrer språk" value={languageFilter} onChange={(e) => setLanguageFilter(e.target.value)} />
+        <Input label="Filtrer tags" value={tagFilter} onChange={(e) => setTagFilter(e.target.value)} />
+        <Input label="Filtrer skaper" value={creatorFilter} onChange={(e) => setCreatorFilter(e.target.value)} />
         <Button onClick={() => { setPage(0); handleSearch(); }}>
           {loading ? "Søker..." : "Søk"}
         </Button>
@@ -171,14 +166,18 @@ export default function ImageSearchApp() {
             <li><strong>Skaper:</strong> {selectedImage.copyright?.creators?.map((c) => c.name).join(", ")}</li>
             <li><strong>Lisens:</strong> {selectedImage.copyright?.license?.license}</li>
           </ul>
-          <a href={selectedImage.image?.imageUrl} download className="c-button c-button--secondary mt-2">
+          <a
+            href={selectedImage.image?.imageUrl}
+            download
+            className="c-button c-button--secondary mt-2"
+          >
             Last ned bilde
           </a>
         </Modal>
       )}
 
       <div className="mt-10">
-        <Heading level="2">Filterstatistikk</Heading>
+        <h2 className="c-heading c-heading--level2">Filterstatistikk</h2>
         <div className="ndla-grid ndla-grid--spacing">
           <div>
             <h4>Språk</h4>
