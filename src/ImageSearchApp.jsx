@@ -8,23 +8,36 @@ export default function ImageSearchApp() {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
   const pageSize = 12;
+  const [licenseFilter, setLicenseFilter] = useState("all");
 
   const handleSearch = async () => {
     setLoading(true);
-    const response = await axios.get(
-      "https://api.ndla.no/image-api/v3/images",
-      {
-        params: {
-          query,
-          language: "*",
-          fallback: false,
-          includeCopyrighted: false,
-          page,
-          pageSize,
-        },
-      }
+    const response = await axios.get("https://api.ndla.no/image-api/v3/images", {
+      params: {
+        query,
+        language: "*",
+        fallback: false,
+        includeCopyrighted: licenseFilter !== "public",
+        page,
+        pageSize,
+      },
+    });
+
+    let resultData = response.data.results;
+
+    // Filtrer ut bilder uten lisens
+    resultData = resultData.filter(
+      (img) => img?.copyright?.license?.license
     );
-    setResults(response.data.results);
+
+    // Filtrer på valgt lisens hvis spesifisert
+    if (licenseFilter !== "all" && licenseFilter !== "public") {
+      resultData = resultData.filter(
+        (img) => img.copyright.license.license === licenseFilter
+      );
+    }
+
+    setResults(resultData);
     setLoading(false);
   };
 
@@ -42,15 +55,25 @@ export default function ImageSearchApp() {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">NDLA bildesøk</h1>
-      <p>Uoffisiell app.</p>
 
-      <div className="flex gap-2 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-end gap-4 mb-6">
         <input
           className="border rounded px-3 py-2 w-full"
           placeholder="Søk etter bilder..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
+        <select
+          value={licenseFilter}
+          onChange={(e) => setLicenseFilter(e.target.value)}
+          className="border rounded px-3 py-2 text-sm"
+        >
+          <option value="all">Alle lisenser</option>
+          <option value="public">Kun offentlig tilgjengelige</option>
+          <option value="CC BY">CC BY</option>
+          <option value="CC0">CC0</option>
+          <option value="NDLA">NDLA</option>
+        </select>
         <button
           onClick={startNewSearch}
           disabled={loading}
@@ -72,9 +95,34 @@ export default function ImageSearchApp() {
               alt={item.alttext?.alttext || ""}
               className="w-full h-48 object-cover"
             />
-            <div className="p-4">
-              <h3 className="font-semibold">{item.title?.title}</h3>
-              <p className="text-sm text-gray-600">{item.caption?.caption}</p>
+            <div className="p-4 space-y-1">
+              <h3 className="font-semibold text-lg">{item.title?.title}</h3>
+              {item.alttext?.alttext && (
+                <p className="text-sm text-gray-600 italic">Alt: {item.alttext.alttext}</p>
+              )}
+              {item.copyright?.license?.license && (
+                <p className="text-xs text-gray-700">
+                  Lisens:{" "}
+                  {item.copyright.license.url ? (
+                    <a
+                      href={item.copyright.license.url}
+                      className="text-blue-600 underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {item.copyright.license.license}
+                    </a>
+                  ) : (
+                    item.copyright.license.license
+                  )}
+                </p>
+              )}
+              {item.copyright?.creators?.length > 0 && (
+                <p className="text-xs text-gray-700">
+                  Skaper: {item.copyright.creators.map((c) => c.name).join(", ")}
+                </p>
+              )}
             </div>
           </div>
         ))}
@@ -117,14 +165,9 @@ export default function ImageSearchApp() {
             <p className="text-sm mb-2">{selected.caption?.caption}</p>
 
             <div className="border-t pt-4 text-sm space-y-1">
-              <p>
-                <strong>Språk:</strong> {selected.language}
-              </p>
-              <p>
-                <strong>Alt-tekst:</strong> {selected.alttext?.alttext}
-              </p>
-              <p>
-                <strong>Lisens:</strong>{" "}
+              <p><strong>Språk:</strong> {selected.language}</p>
+              <p><strong>Alt-tekst:</strong> {selected.alttext?.alttext}</p>
+              <p><strong>Lisens:</strong>{" "}
                 {selected.copyright?.license?.url ? (
                   <a
                     href={selected.copyright.license.url}
@@ -138,29 +181,12 @@ export default function ImageSearchApp() {
                   selected.copyright?.license?.license
                 )}
               </p>
-              <p>
-                <strong>Opphav:</strong> {selected.copyright?.origin}
-              </p>
-              <p>
-                <strong>Gyldig fra:</strong> {selected.copyright?.validFrom}
-              </p>
-              <p>
-                <strong>Gyldig til:</strong> {selected.copyright?.validTo}
-              </p>
-              <p>
-                <strong>Skapere:</strong>{" "}
-                {selected.copyright?.creators?.map((c) => c.name).join(", ")}
-              </p>
-              <p>
-                <strong>Rettighetshavere:</strong>{" "}
-                {selected.copyright?.rightsholders
-                  ?.map((r) => r.name)
-                  .join(", ")}
-              </p>
-              <p>
-                <strong>Behandlet:</strong>{" "}
-                {selected.copyright?.processed ? "Ja" : "Nei"}
-              </p>
+              <p><strong>Opphav:</strong> {selected.copyright?.origin}</p>
+              <p><strong>Gyldig fra:</strong> {selected.copyright?.validFrom}</p>
+              <p><strong>Gyldig til:</strong> {selected.copyright?.validTo}</p>
+              <p><strong>Skapere:</strong> {selected.copyright?.creators?.map((c) => c.name).join(", ")}</p>
+              <p><strong>Rettighetshavere:</strong> {selected.copyright?.rightsholders?.map((r) => r.name).join(", ")}</p>
+              <p><strong>Behandlet:</strong> {selected.copyright?.processed ? "Ja" : "Nei"}</p>
             </div>
 
             <a
