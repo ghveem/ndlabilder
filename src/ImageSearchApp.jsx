@@ -24,6 +24,39 @@ const MODEL_RELEASE = {
 
 const AI_GENERATED = { Yes: "Ja", Partial: "Delvis", No: "Nei" };
 
+const LANGUAGES = [
+  ["*", "Alle språk"],
+  ["nb", "Bokmål"],
+  ["nn", "Nynorsk"],
+  ["en", "Engelsk"],
+  ["se", "Nordsamisk"],
+  ["sma", "Sørsamisk"],
+  ["zh", "Kinesisk"],
+  ["de", "Tysk"],
+  ["und", "Ukjent språk"],
+];
+
+const QUERY_FIELDS = [
+  ["", "Alle felt"],
+  ["titles", "Tittel"],
+  ["alttexts", "Alt-tekst"],
+  ["captions", "Bilettekst"],
+  ["tags", "Emneord"],
+  ["creators", "Opphavsperson"],
+  ["processors", "Bearbeidar"],
+  ["rightsholders", "Rettshavar"],
+];
+
+const SORT_FIELDS = [
+  ["relevance", "Relevans"],
+  ["title", "Tittel"],
+  ["lastUpdated", "Sist oppdatert"],
+  ["width", "Breidd"],
+  ["height", "Høgd"],
+];
+
+const PAGE_SIZES = [12, 24, 48];
+
 const AI_BADGE = { Yes: "KI-generert", Partial: "Delvis KI-generert" };
 
 const thumbnailUrl = (image) =>
@@ -37,7 +70,11 @@ export default function ImageSearchApp() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
-  const pageSize = 12;
+  const [pageSize, setPageSize] = useState(12);
+  const [sortField, setSortField] = useState("relevance");
+  const [sortDesc, setSortDesc] = useState(true);
+  const [language, setLanguage] = useState("*");
+  const [queryField, setQueryField] = useState("");
   const [licenseFilter, setLicenseFilter] = useState("all");
   const [onlyModelReleased, setOnlyModelReleased] = useState(false);
   const [includeInactive, setIncludeInactive] = useState(false);
@@ -55,7 +92,9 @@ export default function ImageSearchApp() {
         const response = await axios.get("https://api.ndla.no/image-api/v3/images", {
           params: {
             query: search.query,
-            language: "*",
+            language: search.language,
+            "query-fields": search.queryField || undefined,
+            sort: `${sortDesc ? "-" : ""}${sortField}`,
             fallback: false,
             license: search.license === "public" ? undefined : search.license,
             "model-released": search.onlyModelReleased ? "yes" : undefined,
@@ -84,11 +123,11 @@ export default function ImageSearchApp() {
     return () => {
       cancelled = true;
     };
-  }, [search, page]);
+  }, [search, page, pageSize, sortField, sortDesc]);
 
   const startNewSearch = () => {
     setPage(1);
-    setSearch({ query, license: licenseFilter, onlyModelReleased, onlyAiGenerated, includeInactive });
+    setSearch({ query, license: licenseFilter, language, queryField, onlyModelReleased, onlyAiGenerated, includeInactive });
   };
 
   const lastPage = Math.max(1, Math.ceil(totalCount / pageSize));
@@ -127,7 +166,7 @@ export default function ImageSearchApp() {
           />
         </label>
 
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <select
             aria-label="Lisens"
             value={licenseFilter}
@@ -140,6 +179,31 @@ export default function ImageSearchApp() {
               <option key={license} value={license}>{license}</option>
             ))}
           </select>
+
+          <select
+            aria-label="Språk"
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className={field}
+          >
+            {LANGUAGES.map(([value, label]) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
+          </select>
+
+          <select
+            aria-label="Søkjefelt"
+            value={queryField}
+            onChange={(e) => setQueryField(e.target.value)}
+            className={field}
+          >
+            {QUERY_FIELDS.map(([value, label]) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
 
           <label className="flex items-center gap-2">
             <input
@@ -183,8 +247,47 @@ export default function ImageSearchApp() {
         </p>
       )}
 
-      {search && !loading && !error && (
-        <p className="mb-4 text-sm text-ndla-dempa">{totalCount} treff</p>
+      {search && (
+        <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-end sm:justify-between">
+          <p className="text-sm text-ndla-dempa">{loading || error ? "\u00a0" : `${totalCount} treff`}</p>
+          <div className="flex flex-wrap gap-4">
+            <label className="flex flex-col gap-1 text-sm font-heading">
+              Sortering
+              <select
+                value={sortField}
+                onChange={(e) => { setSortField(e.target.value); setPage(1); }}
+                className={`${field} font-normal text-base`}
+              >
+                {SORT_FIELDS.map(([value, label]) => (
+                  <option key={value} value={value}>{label}</option>
+                ))}
+              </select>
+            </label>
+            <label className="flex flex-col gap-1 text-sm font-heading">
+              Rekkjefølgje
+              <select
+                value={sortDesc ? "desc" : "asc"}
+                onChange={(e) => { setSortDesc(e.target.value === "desc"); setPage(1); }}
+                className={`${field} font-normal text-base`}
+              >
+                <option value="desc">Fallande</option>
+                <option value="asc">Stigande</option>
+              </select>
+            </label>
+            <label className="flex flex-col gap-1 text-sm font-heading">
+              Treff per side
+              <select
+                value={pageSize}
+                onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }}
+                className={`${field} font-normal text-base`}
+              >
+                {PAGE_SIZES.map((size) => (
+                  <option key={size} value={size}>{size}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+        </div>
       )}
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
