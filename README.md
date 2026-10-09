@@ -13,6 +13,7 @@ En React + Vite + Tailwind-app som lar deg søke i NDLA sitt bilde-API og filtre
   - Valg av enkeltlisens (`license`)
   - Inaktive bilder skjules som standard (`inactive=false`), kan slås på
 - Miniatyrbilder bruker `small.webp`-varianten fra API-et
+- Utseende etter NDLAs visuelle profil: farger, typografi (NDLA-Satoshi med Arial som reserve), knapper, felt, kort og fokusmarkering som på ndla.no. Grensesnittet er på nynorsk.
 - Modal for forhåndsvisning av bilde og detaljer
 - Nedlasting av bilde
 

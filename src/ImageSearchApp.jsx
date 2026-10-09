@@ -86,102 +86,124 @@ export default function ImageSearchApp() {
 
   const lastPage = Math.max(1, Math.ceil(totalCount / pageSize));
 
+  const field =
+    "min-h-12 px-3 border border-ndla-kant rounded bg-white hover:border-ndla-handling focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary";
+  const primaryButton =
+    "min-h-12 px-4 py-2 font-heading text-white bg-primary rounded transition-colors hover:bg-ndla-hover active:bg-ndla-aktiv disabled:opacity-60";
+  const secondaryButton =
+    "min-h-12 px-4 py-2 font-heading text-primary bg-white border border-primary rounded transition-colors hover:bg-ndla-lilla disabled:opacity-40 disabled:hover:bg-white";
+
   return (
-    <div className="p-6 mx-auto max-w-7xl">
-      <h1 className="mb-6 text-3xl font-bold">NDLA bildesøk</h1>
-<p>Dette er ein uoffisiell app basert på <a href="https://api.ndla.no">api.ndla.no</a>.</p>
-      <div className="flex flex-col gap-4 mb-6">
-        <input
-          className="w-full px-3 py-2 border rounded"
-          placeholder="Søk etter bilder..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              startNewSearch();
-            }
-          }}
-        />
+    <div className="px-4 py-8 mx-auto max-w-[1128px]">
+      <h1 className="mb-2 text-[38px] leading-[48px] sm:text-5xl sm:leading-[60px] font-heading tracking-[-0.01em] text-primary">
+        NDLA bildesøk
+      </h1>
+      <p className="mb-8 text-ndla-dempa">
+        Dette er ein uoffisiell app basert på <a href="https://api.ndla.no">api.ndla.no</a>.
+      </p>
+
+      <div className="flex flex-col gap-4 mb-8">
+        <label className="flex flex-col gap-1 font-heading">
+          Søkjeord
+          <input
+            type="search"
+            className={`${field} w-full font-normal`}
+            placeholder="Til dømes hund, fjell eller mikroskop"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                startNewSearch();
+              }
+            }}
+          />
+        </label>
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
           <select
+            aria-label="Lisens"
             value={licenseFilter}
             onChange={(e) => setLicenseFilter(e.target.value)}
-            className="px-3 py-2 text-sm border rounded"
+            className={field}
           >
-            <option value="all">Alle lisenser</option>
-            <option value="public">Kun offentlig tilgjengelige</option>
+            <option value="all">Alle lisensar</option>
+            <option value="public">Berre opne lisensar</option>
             {LICENSES.map((license) => (
               <option key={license} value={license}>{license}</option>
             ))}
           </select>
 
-          <label className="flex items-center gap-2 text-sm">
+          <label className="flex items-center gap-2">
             <input
               type="checkbox"
               checked={onlyModelReleased}
               onChange={() => setOnlyModelReleased(!onlyModelReleased)}
-              className="accent-blue-600"
+              className="w-5 h-5 accent-primary"
             />
-            Kun modellklarert
+            Berre modellklarerte
           </label>
 
-          <label className="flex items-center gap-2 text-sm">
+          <label className="flex items-center gap-2">
             <input
               type="checkbox"
               checked={includeInactive}
               onChange={() => setIncludeInactive(!includeInactive)}
-              className="accent-blue-600"
+              className="w-5 h-5 accent-primary"
             />
             Vis inaktive bilete
           </label>
         </div>
 
-        <button
-          onClick={startNewSearch}
-          disabled={loading}
-          className="px-4 py-2 text-white rounded"
-          style={{ backgroundColor: "#2D1B62" }}
-        >
-          {loading ? "Laster..." : "Søk"}
+        <button onClick={startNewSearch} disabled={loading} className={`${primaryButton} sm:self-start sm:px-8`}>
+          {loading ? "Søkjer …" : "Søk"}
         </button>
       </div>
 
-      {error && <p className="mb-6 text-red-700">{error}</p>}
-
-      {search && !loading && !error && (
-        <p className="mb-4 text-sm text-gray-600">{totalCount} treff</p>
+      {error && (
+        <p role="alert" className="p-6 mb-8 border rounded border-ndla-feil bg-ndla-feil-flate text-ndla-feil">
+          {error}
+        </p>
       )}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {search && !loading && !error && (
+        <p className="mb-4 text-sm text-ndla-dempa">{totalCount} treff</p>
+      )}
+
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {results.map((item) => (
-          <div
+          <article
             key={item.id}
-            onClick={() => setSelected(item)}
-            className="overflow-hidden transition border rounded shadow cursor-pointer hover:shadow-lg"
+            className="relative overflow-hidden bg-white rounded shadow-kort transition-shadow hover:shadow-kort-hover"
           >
             <img
               src={thumbnailUrl(item.image)}
               alt={item.alttext?.alttext || ""}
               loading="lazy"
-              className="object-cover w-full h-48"
+              className="object-cover w-full h-[200px] bg-ndla-flate"
             />
             <div className="p-4 space-y-1">
-              <h3 className="text-lg font-semibold">{item.title?.title}</h3>
+              <h2 className="text-lg leading-6 font-heading tracking-[-0.01em] text-primary">
+                {/* Knappen dekkjer heile kortet */}
+                <button
+                  onClick={() => setSelected(item)}
+                  className="text-left after:absolute after:inset-0 after:content-['']"
+                >
+                  {item.title?.title}
+                </button>
+              </h2>
               {item.alttext?.alttext && (
-                <p className="text-sm italic text-gray-600">Alt: {item.alttext.alttext}</p>
+                <p className="text-sm text-ndla-dempa">Alt-tekst: {item.alttext.alttext}</p>
               )}
               {item.copyright?.license?.license && (
-                <p className="text-xs text-gray-700">
+                <p className="text-sm">
                   Lisens:{" "}
                   {item.copyright.license.url ? (
                     <a
                       href={item.copyright.license.url}
-                      className="text-blue-600 underline"
+                      className="relative z-10"
                       target="_blank"
                       rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
                     >
                       {item.copyright.license.license}
                     </a>
@@ -191,56 +213,61 @@ export default function ImageSearchApp() {
                 </p>
               )}
               {item.copyright?.creators?.length > 0 && (
-                <p className="text-xs text-gray-700">
-                  Skaper: {item.copyright.creators.map((c) => c.name).join(", ")}
+                <p className="text-sm">
+                  Opphavsperson: {item.copyright.creators.map((c) => c.name).join(", ")}
                 </p>
               )}
-              <p className="text-xs text-gray-500">
-                Modellklarert: {item.modelRelease === "yes" ? "✅" : "🚫"}
+              <p className="text-sm text-ndla-dempa">
+                Modellklarert: {MODEL_RELEASE[item.modelRelease] || item.modelRelease}
               </p>
             </div>
-          </div>
+          </article>
         ))}
       </div>
 
       {results.length > 0 && (
-        <div className="flex items-center justify-center gap-4 my-8">
+        <nav aria-label="Sider" className="flex items-center justify-center gap-4 my-12">
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+            className={secondaryButton}
             disabled={page === 1 || loading}
           >
-            Forrige
+            Førre
           </button>
           <span className="text-sm">Side {page} av {lastPage}</span>
           <button
             onClick={() => setPage((p) => p + 1)}
-            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+            className={secondaryButton}
             disabled={page >= lastPage || loading}
           >
             Neste
           </button>
-        </div>
+        </nav>
       )}
 
       {selected && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
           onClick={() => setSelected(null)}
         >
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="dialog-tittel"
             className="bg-white p-6 rounded shadow-lg max-w-2xl w-full relative overflow-y-auto max-h-[90vh]"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="mb-4 text-xl font-bold">{selected.title?.title}</h2>
+            <h2 id="dialog-tittel" className="mb-4 pr-10 text-[22px] leading-[30px] font-heading tracking-[-0.01em] text-primary">
+              {selected.title?.title}
+            </h2>
             <img
               src={selected.image?.imageUrl}
               alt={selected.alttext?.alttext}
-              className="w-full max-h-[40vh] object-contain mb-4"
+              className="w-full max-h-[40vh] object-contain mb-4 bg-ndla-flate"
             />
             <p className="mb-2 text-sm">{selected.caption?.caption}</p>
 
-            <div className="pt-4 space-y-1 text-sm border-t">
+            <div className="pt-4 space-y-1 text-sm border-t border-ndla-diskre">
               <p><strong>Språk:</strong> {selected.supportedLanguages?.join(", ")}</p>
               <p><strong>Alt-tekst:</strong> {selected.alttext?.alttext}</p>
               <p><strong>Lisens:</strong>{" "}
@@ -249,7 +276,6 @@ export default function ImageSearchApp() {
                     href={selected.copyright.license.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 underline"
                   >
                     {selected.copyright.license.license}
                   </a>
@@ -258,15 +284,15 @@ export default function ImageSearchApp() {
                 )}
               </p>
               <p><strong>Opphav:</strong> {selected.copyright?.origin}</p>
-              <p><strong>Gyldig fra:</strong> {selected.copyright?.validFrom}</p>
+              <p><strong>Gyldig frå:</strong> {selected.copyright?.validFrom}</p>
               <p><strong>Gyldig til:</strong> {selected.copyright?.validTo}</p>
               <p><strong>Bearbeidd av:</strong> {selected.copyright?.processors?.map((p) => p.name).join(", ")}</p>
-              <p><strong>Skapere:</strong> {selected.copyright?.creators?.map((c) => c.name).join(", ")}</p>
-              <p><strong>Rettighetshavere:</strong> {selected.copyright?.rightsholders?.map((r) => r.name).join(", ")}</p>
-              <p><strong>Behandlet:</strong> {selected.copyright?.processed ? "Ja" : "Nei"}</p>
+              <p><strong>Opphavspersonar:</strong> {selected.copyright?.creators?.map((c) => c.name).join(", ")}</p>
+              <p><strong>Rettshavarar:</strong> {selected.copyright?.rightsholders?.map((r) => r.name).join(", ")}</p>
+              <p><strong>Handsama:</strong> {selected.copyright?.processed ? "Ja" : "Nei"}</p>
               <p><strong>Modellklarert:</strong> {MODEL_RELEASE[selected.modelRelease] || selected.modelRelease}</p>
               <p><strong>KI-generert:</strong> {AI_GENERATED[selected.aiGenerated] || "Ukjent"}</p>
-              <p><strong>Tags:</strong> {selected.tags?.tags?.join(", ")}</p>
+              <p><strong>Emneord:</strong> {selected.tags?.tags?.join(", ")}</p>
               <p><strong>Storleik:</strong>{" "}
                 {selected.image?.dimensions && `${selected.image.dimensions.width} × ${selected.image.dimensions.height} px, `}
                 {selected.image?.size && `${Math.round(selected.image.size / 1024)} kB, `}
@@ -279,14 +305,15 @@ export default function ImageSearchApp() {
             <a
               href={selected.image?.imageUrl}
               download
-              className="inline-block mt-6 text-blue-600 underline"
+              className={`${primaryButton} inline-flex items-center mt-6 no-underline text-white`}
             >
-              Last ned bilde
+              Last ned biletet
             </a>
 
             <button
               onClick={() => setSelected(null)}
-              className="absolute text-xl text-gray-500 top-2 right-2 hover:text-black"
+              aria-label="Lukk"
+              className="absolute flex items-center justify-center w-10 h-10 text-2xl rounded top-2 right-2 text-primary hover:bg-ndla-lilla"
             >
               &times;
             </button>

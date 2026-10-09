@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    font-feature-settings: "ss03" on, "liga" off, "clig" off;
+  }
+  body {
+    @apply bg-white font-sans text-ndla-tekst;
+  }
+  a {
+    @apply text-ndla-lenke underline;
+    text-underline-offset: 0.27em;
+  }
+  a:hover {
+    @apply no-underline;
+  }
+  :focus-visible {
+    outline: 3px solid #2d1b62;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
