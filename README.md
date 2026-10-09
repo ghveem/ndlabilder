@@ -6,12 +6,15 @@ Ein React + Vite + Tailwind-app som lèt deg søkje i bilete-API-et til NDLA og 
 
 - Søk etter bilete på tittel, alt-tekst og emneord
 - Vis metadata: lisens, opphavspersonar, bearbeidarar, rettshavarar, modellklarering, KI-generert, emneord, dimensjonar og filstorleik
-- Sideinndeling med førre/neste og talet på treff
+- Sideinndeling med førre/neste, talet på treff og val av 12, 24 eller 48 treff per side (`page-size`)
+- Sortering på relevans, tittel, sist oppdatert, breidd eller høgd, fallande eller stigande (`sort`)
 - Filtrering (skjer i API-et, ikkje i nettlesaren):
   - ✅ Berre opne lisensar (utelèt `COPYRIGHTED`)
   - 📸 Berre modellklarerte bilete (`model-released=yes`)
   - Berre KI-genererte bilete, heilt eller delvis (`ai-generated=Yes,Partial`). Dei fleste bileta manglar denne verdien, så det går ikkje an å filtrere *bort* KI-genererte bilete på ein påliteleg måte.
   - Val av enkeltlisens (`license`)
+  - Språk (`language`): bokmål, nynorsk, engelsk, nordsamisk, sørsamisk, kinesisk, tysk eller ukjent (`und`)
+  - Kva felt søket gjeld (`query-fields`): tittel, alt-tekst, bilettekst, emneord, opphavsperson, bearbeidar eller rettshavar
   - Inaktive bilete er skjulte som standard (`inactive=false`), men kan visast
 - Miniatyrbileta brukar `small.webp`-varianten frå API-et
 - Merkelapp «KI-generert» / «Delvis KI-generert» på korta når biletet er merkt slik i API-et
