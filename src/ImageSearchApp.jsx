@@ -24,6 +24,8 @@ const MODEL_RELEASE = {
 
 const AI_GENERATED = { Yes: "Ja", Partial: "Delvis", No: "Nei" };
 
+const AI_BADGE = { Yes: "KI-generert", Partial: "Delvis KI-generert" };
+
 const thumbnailUrl = (image) =>
   image?.variants?.find((v) => v.size === "small")?.variantUrl || image?.imageUrl;
 
@@ -61,6 +63,9 @@ export default function ImageSearchApp() {
             inactive: search.includeInactive ? undefined : false,
             page,
             "page-size": pageSize,
+            // CloudFront framfor api.ndla.no lagrar svaret med Access-Control-Allow-Origin
+            // utan Vary: Origin. Eigen parameter per vertsnamn gjev eiga cache-oppføring.
+            klient: window.location.host,
           },
         });
         if (cancelled) return;
@@ -195,6 +200,11 @@ export default function ImageSearchApp() {
               className="object-cover w-full h-[200px] bg-ndla-flate"
             />
             <div className="p-4 space-y-1">
+              {AI_BADGE[item.aiGenerated] && (
+                <span className="inline-block px-3 mb-1 text-sm border rounded-sm border-ndla-motivasjon bg-ndla-lilla text-ndla-tekst">
+                  {AI_BADGE[item.aiGenerated]}
+                </span>
+              )}
               <h2 className="text-lg leading-6 font-heading tracking-[-0.01em] text-primary">
                 {/* Knappen dekkjer heile kortet */}
                 <button
