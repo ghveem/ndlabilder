@@ -10,6 +10,7 @@ En React + Vite + Tailwind-app som lar deg søke i NDLA sitt bilde-API og filtre
 - Filtrering (gjøres i API-et, ikke i nettleseren):
   - ✅ Kun offentlig tilgjengelige bilder (utelater `COPYRIGHTED`)
   - 📸 Kun modellklarerte bilder (`model-released=yes`)
+  - Kun KI-genererte bilder, helt eller delvis (`ai-generated=Yes,Partial`). Merk at de fleste bildene mangler denne verdien, så det går ikke an å filtrere *bort* KI-genererte bilder pålitelig.
   - Valg av enkeltlisens (`license`)
   - Inaktive bilder skjules som standard (`inactive=false`), kan slås på
 - Miniatyrbilder bruker `small.webp`-varianten fra API-et
