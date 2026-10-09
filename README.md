@@ -14,6 +14,7 @@ En React + Vite + Tailwind-app som lar deg søke i NDLA sitt bilde-API og filtre
   - Valg av enkeltlisens (`license`)
   - Inaktive bilder skjules som standard (`inactive=false`), kan slås på
 - Miniatyrbilder bruker `small.webp`-varianten fra API-et
+- Merkelapp «KI-generert» / «Delvis KI-generert» på kortene når bildet er merket slik i API-et
 - Utseende etter NDLAs visuelle profil: farger, typografi (NDLA-Satoshi med Arial som reserve), knapper, felt, kort og fokusmarkering som på ndla.no. Grensesnittet er på nynorsk.
 - Modal for forhåndsvisning av bilde og detaljer
 - Nedlasting av bilde
@@ -52,6 +53,8 @@ Bilder og metadata hentes fra NDLA sitt offentlige bilde-API:
 ```
 https://api.ndla.no/image-api/v3/images
 ```
+
+**Kjent API-feil (CORS):** CloudFront foran `api.ndla.no` cacher `Access-Control-Allow-Origin` uten `Vary: Origin`, så et svar laget for ett domene kan bli servert til et annet og blokkert av nettleseren. Appen sender derfor `klient=<vertsnavn>` som ekstra parameter, slik at hvert domene får sin egen cache-oppføring. Kan fjernes når feilen er rettet i API-et.
 
 Dokumentasjon: [api.ndla.no/swagger](https://api.ndla.no/swagger?url=https://api.ndla.no/image-api/api-docs). Merk at query-parametrene bruker bindestrek (`page-size`, `model-released`), og at `page` starter på 1.
 

@@ -63,6 +63,9 @@ export default function ImageSearchApp() {
             inactive: search.includeInactive ? undefined : false,
             page,
             "page-size": pageSize,
+            // CloudFront framfor api.ndla.no lagrar svaret med Access-Control-Allow-Origin
+            // utan Vary: Origin. Eigen parameter per vertsnamn gjev eiga cache-oppføring.
+            klient: window.location.host,
           },
         });
         if (cancelled) return;
