@@ -2,69 +2,89 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
+// Lisensar som finst i image-api (license-parameteren).
+const LICENSES = [
+  "CC0-1.0",
+  "PD",
+  "CC-BY-4.0",
+  "CC-BY-SA-4.0",
+  "CC-BY-NC-4.0",
+  "CC-BY-ND-4.0",
+  "CC-BY-NC-SA-4.0",
+  "CC-BY-NC-ND-4.0",
+  "COPYRIGHTED",
+];
+
+const MODEL_RELEASE = {
+  yes: "Ja",
+  no: "Nei",
+  "not-applicable": "Ikkje relevant",
+  "not-set": "Ikkje sett",
+};
+
+const AI_GENERATED = { Yes: "Ja", Partial: "Delvis", No: "Nei" };
+
+const thumbnailUrl = (image) =>
+  image?.variants?.find((v) => v.size === "small")?.variantUrl || image?.imageUrl;
+
 export default function ImageSearchApp() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(0);
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
   const pageSize = 12;
   const [licenseFilter, setLicenseFilter] = useState("all");
-  const [licenseOptions, setLicenseOptions] = useState([]);
   const [onlyModelReleased, setOnlyModelReleased] = useState(false);
-
-  const handleSearch = async () => {
-    setLoading(true);
-    const response = await axios.get("https://api.ndla.no/image-api/v3/images", {
-      params: {
-        query,
-        language: "*",
-        fallback: false,
-        includeCopyrighted: licenseFilter !== "public",
-        page,
-        pageSize,
-      },
-    });
-
-    let resultData = response.data.results;
-
-    resultData = resultData.filter(
-      (img) => img?.copyright?.license?.license
-    );
-
-    if (licenseFilter !== "all" && licenseFilter !== "public") {
-      resultData = resultData.filter(
-        (img) => img.copyright.license.license === licenseFilter
-      );
-    }
-
-    if (onlyModelReleased) {
-      resultData = resultData.filter(
-        (img) => img.image?.modelRelease === "released"
-      );
-    }
-
-    const licenses = Array.from(new Set(
-      resultData
-        .map(img => img?.copyright?.license?.license)
-        .filter(Boolean)
-    )).sort();
-
-    setLicenseOptions(licenses);
-    setResults(resultData);
-    setLoading(false);
-  };
+  const [includeInactive, setIncludeInactive] = useState(false);
+  // Søket som faktisk blir køyrt; blir sett når brukaren trykkjer Søk/Enter.
+  const [search, setSearch] = useState(null);
 
   useEffect(() => {
-    if (query) {
-      handleSearch();
-    }
-  }, [page]);
+    if (!search) return;
+    let cancelled = false;
+    const run = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await axios.get("https://api.ndla.no/image-api/v3/images", {
+          params: {
+            query: search.query,
+            language: "*",
+            fallback: false,
+            license: search.license === "public" ? undefined : search.license,
+            "model-released": search.onlyModelReleased ? "yes" : undefined,
+            inactive: search.includeInactive ? undefined : false,
+            page,
+            "page-size": pageSize,
+          },
+        });
+        if (cancelled) return;
+        setResults(response.data.results);
+        setTotalCount(response.data.totalCount);
+      } catch (e) {
+        if (cancelled) return;
+        setResults([]);
+        setTotalCount(0);
+        setError("Klarte ikkje å hente bilete frå API-et. Prøv igjen.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [search, page]);
 
   const startNewSearch = () => {
-    setPage(0);
-    handleSearch();
+    setPage(1);
+    setSearch({ query, license: licenseFilter, onlyModelReleased, includeInactive });
   };
+
+  const lastPage = Math.max(1, Math.ceil(totalCount / pageSize));
 
   return (
     <div className="p-6 mx-auto max-w-7xl">
@@ -92,7 +112,7 @@ export default function ImageSearchApp() {
           >
             <option value="all">Alle lisenser</option>
             <option value="public">Kun offentlig tilgjengelige</option>
-            {licenseOptions.map((license) => (
+            {LICENSES.map((license) => (
               <option key={license} value={license}>{license}</option>
             ))}
           </select>
@@ -106,6 +126,16 @@ export default function ImageSearchApp() {
             />
             Kun modellklarert
           </label>
+
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={includeInactive}
+              onChange={() => setIncludeInactive(!includeInactive)}
+              className="accent-blue-600"
+            />
+            Vis inaktive bilete
+          </label>
         </div>
 
         <button
@@ -118,6 +148,12 @@ export default function ImageSearchApp() {
         </button>
       </div>
 
+      {error && <p className="mb-6 text-red-700">{error}</p>}
+
+      {search && !loading && !error && (
+        <p className="mb-4 text-sm text-gray-600">{totalCount} treff</p>
+      )}
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {results.map((item) => (
           <div
@@ -126,8 +162,9 @@ export default function ImageSearchApp() {
             className="overflow-hidden transition border rounded shadow cursor-pointer hover:shadow-lg"
           >
             <img
-              src={item.image?.imageUrl}
+              src={thumbnailUrl(item.image)}
               alt={item.alttext?.alttext || ""}
+              loading="lazy"
               className="object-cover w-full h-48"
             />
             <div className="p-4 space-y-1">
@@ -159,7 +196,7 @@ export default function ImageSearchApp() {
                 </p>
               )}
               <p className="text-xs text-gray-500">
-                Modellklarert: {item.image?.modelRelease === "released" ? "✅" : "🚫"}
+                Modellklarert: {item.modelRelease === "yes" ? "✅" : "🚫"}
               </p>
             </div>
           </div>
@@ -169,16 +206,17 @@ export default function ImageSearchApp() {
       {results.length > 0 && (
         <div className="flex items-center justify-center gap-4 my-8">
           <button
-            onClick={() => setPage((p) => Math.max(0, p - 1))}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
             className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-            disabled={page === 0}
+            disabled={page === 1 || loading}
           >
             Forrige
           </button>
-          <span className="text-sm">Side {page + 1}</span>
+          <span className="text-sm">Side {page} av {lastPage}</span>
           <button
             onClick={() => setPage((p) => p + 1)}
-            className="px-4 py-2 bg-gray-200 rounded"
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+            disabled={page >= lastPage || loading}
           >
             Neste
           </button>
@@ -203,7 +241,7 @@ export default function ImageSearchApp() {
             <p className="mb-2 text-sm">{selected.caption?.caption}</p>
 
             <div className="pt-4 space-y-1 text-sm border-t">
-              <p><strong>Språk:</strong> {selected.language}</p>
+              <p><strong>Språk:</strong> {selected.supportedLanguages?.join(", ")}</p>
               <p><strong>Alt-tekst:</strong> {selected.alttext?.alttext}</p>
               <p><strong>Lisens:</strong>{" "}
                 {selected.copyright?.license?.url ? (
@@ -222,10 +260,20 @@ export default function ImageSearchApp() {
               <p><strong>Opphav:</strong> {selected.copyright?.origin}</p>
               <p><strong>Gyldig fra:</strong> {selected.copyright?.validFrom}</p>
               <p><strong>Gyldig til:</strong> {selected.copyright?.validTo}</p>
+              <p><strong>Bearbeidd av:</strong> {selected.copyright?.processors?.map((p) => p.name).join(", ")}</p>
               <p><strong>Skapere:</strong> {selected.copyright?.creators?.map((c) => c.name).join(", ")}</p>
               <p><strong>Rettighetshavere:</strong> {selected.copyright?.rightsholders?.map((r) => r.name).join(", ")}</p>
               <p><strong>Behandlet:</strong> {selected.copyright?.processed ? "Ja" : "Nei"}</p>
-              <p><strong>Modellklarert:</strong> {selected.image?.modelRelease === "released" ? "Ja" : "Nei"}</p>
+              <p><strong>Modellklarert:</strong> {MODEL_RELEASE[selected.modelRelease] || selected.modelRelease}</p>
+              <p><strong>KI-generert:</strong> {AI_GENERATED[selected.aiGenerated] || "Ukjent"}</p>
+              <p><strong>Tags:</strong> {selected.tags?.tags?.join(", ")}</p>
+              <p><strong>Storleik:</strong>{" "}
+                {selected.image?.dimensions && `${selected.image.dimensions.width} × ${selected.image.dimensions.height} px, `}
+                {selected.image?.size && `${Math.round(selected.image.size / 1024)} kB, `}
+                {selected.image?.contentType}
+              </p>
+              <p><strong>Oppretta:</strong> {selected.created?.slice(0, 10)}</p>
+              {selected.inactive && <p><strong>Inaktivt:</strong> Ja</p>}
             </div>
 
             <a
