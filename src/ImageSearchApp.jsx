@@ -39,6 +39,7 @@ export default function ImageSearchApp() {
   const [licenseFilter, setLicenseFilter] = useState("all");
   const [onlyModelReleased, setOnlyModelReleased] = useState(false);
   const [includeInactive, setIncludeInactive] = useState(false);
+  const [onlyAiGenerated, setOnlyAiGenerated] = useState(false);
   // Søket som faktisk blir køyrt; blir sett når brukaren trykkjer Søk/Enter.
   const [search, setSearch] = useState(null);
 
@@ -56,6 +57,7 @@ export default function ImageSearchApp() {
             fallback: false,
             license: search.license === "public" ? undefined : search.license,
             "model-released": search.onlyModelReleased ? "yes" : undefined,
+            "ai-generated": search.onlyAiGenerated ? "Yes,Partial" : undefined,
             inactive: search.includeInactive ? undefined : false,
             page,
             "page-size": pageSize,
@@ -81,7 +83,7 @@ export default function ImageSearchApp() {
 
   const startNewSearch = () => {
     setPage(1);
-    setSearch({ query, license: licenseFilter, onlyModelReleased, includeInactive });
+    setSearch({ query, license: licenseFilter, onlyModelReleased, onlyAiGenerated, includeInactive });
   };
 
   const lastPage = Math.max(1, Math.ceil(totalCount / pageSize));
@@ -142,6 +144,16 @@ export default function ImageSearchApp() {
               className="w-5 h-5 accent-primary"
             />
             Berre modellklarerte
+          </label>
+
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={onlyAiGenerated}
+              onChange={() => setOnlyAiGenerated(!onlyAiGenerated)}
+              className="w-5 h-5 accent-primary"
+            />
+            Berre KI-genererte
           </label>
 
           <label className="flex items-center gap-2">
