@@ -5,12 +5,15 @@ En React + Vite + Tailwind-app som lar deg søke i NDLA sitt bilde-API og filtre
 ## 🚀 Funksjoner
 
 - Søk etter bilder med tittel, alt-tekst og tagger
-- Vis metadata: lisens, skapere, rettighetshavere, modellklarering
-- Paginering med neste/forrige
-- Filtrering:
-  - ✅ Kun offentlig tilgjengelige bilder (lisens)
-  - 📸 Kun bilder med modellklarering
-  - Dynamisk dropdown for lisensvalg
+- Vis metadata: lisens, skapere, bearbeidere, rettighetshavere, modellklarering, KI-generert, tags, dimensjoner og filstørrelse
+- Paginering med neste/forrige og totalt antall treff
+- Filtrering (gjøres i API-et, ikke i nettleseren):
+  - ✅ Kun offentlig tilgjengelige bilder (utelater `COPYRIGHTED`)
+  - 📸 Kun modellklarerte bilder (`model-released=yes`)
+  - Valg av enkeltlisens (`license`)
+  - Inaktive bilder skjules som standard (`inactive=false`), kan slås på
+- Miniatyrbilder bruker `small.webp`-varianten fra API-et
+- Utseende etter NDLAs visuelle profil: farger, typografi (NDLA-Satoshi med Arial som reserve), knapper, felt, kort og fokusmarkering som på ndla.no. Grensesnittet er på nynorsk.
 - Modal for forhåndsvisning av bilde og detaljer
 - Nedlasting av bilde
 
@@ -18,14 +21,14 @@ En React + Vite + Tailwind-app som lar deg søke i NDLA sitt bilde-API og filtre
 
 - [React](https://reactjs.org/)
 - [Vite](https://vitejs.dev/)
-- [Tailwind CSS](https://tailwindcss.com/)
+- [Tailwind CSS 4](https://tailwindcss.com/) via `@tailwindcss/vite` (tema i `src/index.css`)
 - [Axios](https://axios-http.com/)
 
 ## ⚡ Installasjon
 
 ```bash
-git clone https://github.com/ndla/bildesok.git
-cd bildesok
+git clone https://github.com/ghveem/ndlabilder.git
+cd ndlabilder
 npm install
 npm run dev
 ```
@@ -40,7 +43,7 @@ npm run build
 
 ## 🌌 Distribusjon
 
-Deployes enkelt med [Vercel](https://vercel.com/) eller annen statisk host.
+Kjører på [ndlabilder.vercel.app](https://ndlabilder.vercel.app). Vercel bygger appen selv (`npm run build`) ved push til `main`, så `dist/` sjekkes ikke inn i git.
 
 ## 🔗 API-kilde
 
@@ -48,6 +51,8 @@ Bilder og metadata hentes fra NDLA sitt offentlige bilde-API:
 ```
 https://api.ndla.no/image-api/v3/images
 ```
+
+Dokumentasjon: [api.ndla.no/swagger](https://api.ndla.no/swagger?url=https://api.ndla.no/image-api/api-docs). Merk at query-parametrene bruker bindestrek (`page-size`, `model-released`), og at `page` starter på 1.
 
 ## 🚩 Lisens
 

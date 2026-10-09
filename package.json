@@ -13,10 +13,9 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "vite": "^8.0.16",
+    "@tailwindcss/vite": "^4.3.3",
     "@vitejs/plugin-react": "^6.0.2",
-    "tailwindcss": "^3.4.0",
-    "postcss": "^8.5.24",
-    "autoprefixer": "^10.4.19"
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.0.16"
   }
 }
