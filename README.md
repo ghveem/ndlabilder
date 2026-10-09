@@ -21,7 +21,7 @@ En React + Vite + Tailwind-app som lar deg søke i NDLA sitt bilde-API og filtre
 
 - [React](https://reactjs.org/)
 - [Vite](https://vitejs.dev/)
-- [Tailwind CSS](https://tailwindcss.com/)
+- [Tailwind CSS 4](https://tailwindcss.com/) via `@tailwindcss/vite` (tema i `src/index.css`)
 - [Axios](https://axios-http.com/)
 
 ## ⚡ Installasjon

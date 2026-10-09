@@ -1,6 +1,48 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@theme {
+  --color-primary: #2d1b62;
+
+  --color-ndla-tekst: #18181b;
+  --color-ndla-dempa: #61616b;
+  --color-ndla-lenke: #155784;
+  --color-ndla-handling: #823cc8;
+  --color-ndla-hover: #5e1f9e;
+  --color-ndla-aktiv: #40116f;
+  --color-ndla-flate: #f2f2f3;
+  --color-ndla-lilla: #f2ebfc;
+  --color-ndla-kant: #94949e;
+  --color-ndla-diskre: #c9c9cf;
+  --color-ndla-feil: #ad0000;
+  --color-ndla-feil-flate: #ffe6e6;
+
+  --font-sans: 'NDLA-Satoshi', 'NDLA Satoshi', Arial, Helvetica, sans-serif;
+
+  --font-weight-heading: 670;
+
+  --shadow-kort: 0 1px 4px rgba(0, 0, 0, 0.15), 0 0 1px rgba(0, 0, 0, 0.18);
+  --shadow-kort-hover:
+    0 3px 8px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1),
+    0 0 1px rgba(0, 0, 0, 0.18);
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
 @layer base {
   html {
@@ -15,6 +57,10 @@
   }
   a:hover {
     @apply no-underline;
+  }
+  /* Tailwind 4 har vanleg peikar på knappar; behald peikefinger som i v3 */
+  button:not(:disabled) {
+    cursor: pointer;
   }
   :focus-visible {
     outline: 3px solid #2d1b62;

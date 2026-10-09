@@ -87,11 +87,11 @@ export default function ImageSearchApp() {
   const lastPage = Math.max(1, Math.ceil(totalCount / pageSize));
 
   const field =
-    "min-h-12 px-3 border border-ndla-kant rounded bg-white hover:border-ndla-handling focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary";
+    "min-h-12 px-3 border border-ndla-kant rounded-sm bg-white hover:border-ndla-handling focus:outline-hidden focus:border-primary focus:ring-1 focus:ring-primary";
   const primaryButton =
-    "min-h-12 px-4 py-2 font-heading text-white bg-primary rounded transition-colors hover:bg-ndla-hover active:bg-ndla-aktiv disabled:opacity-60";
+    "min-h-12 px-4 py-2 font-heading text-white bg-primary rounded-sm transition-colors hover:bg-ndla-hover active:bg-ndla-aktiv disabled:opacity-60";
   const secondaryButton =
-    "min-h-12 px-4 py-2 font-heading text-primary bg-white border border-primary rounded transition-colors hover:bg-ndla-lilla disabled:opacity-40 disabled:hover:bg-white";
+    "min-h-12 px-4 py-2 font-heading text-primary bg-white border border-primary rounded-sm transition-colors hover:bg-ndla-lilla disabled:opacity-40 disabled:hover:bg-white";
 
   return (
     <div className="px-4 py-8 mx-auto max-w-[1128px]">
@@ -161,7 +161,7 @@ export default function ImageSearchApp() {
       </div>
 
       {error && (
-        <p role="alert" className="p-6 mb-8 border rounded border-ndla-feil bg-ndla-feil-flate text-ndla-feil">
+        <p role="alert" className="p-6 mb-8 border rounded-sm border-ndla-feil bg-ndla-feil-flate text-ndla-feil">
           {error}
         </p>
       )}
@@ -174,7 +174,7 @@ export default function ImageSearchApp() {
         {results.map((item) => (
           <article
             key={item.id}
-            className="relative overflow-hidden bg-white rounded shadow-kort transition-shadow hover:shadow-kort-hover"
+            className="relative overflow-hidden bg-white rounded-sm shadow-kort transition-shadow hover:shadow-kort-hover"
           >
             <img
               src={thumbnailUrl(item.image)}
@@ -254,7 +254,7 @@ export default function ImageSearchApp() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="dialog-tittel"
-            className="bg-white p-6 rounded shadow-lg max-w-2xl w-full relative overflow-y-auto max-h-[90vh]"
+            className="bg-white p-6 rounded-sm shadow-lg max-w-2xl w-full relative overflow-y-auto max-h-[90vh]"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 id="dialog-tittel" className="mb-4 pr-10 text-[22px] leading-[30px] font-heading tracking-[-0.01em] text-primary">
@@ -313,7 +313,7 @@ export default function ImageSearchApp() {
             <button
               onClick={() => setSelected(null)}
               aria-label="Lukk"
-              className="absolute flex items-center justify-center w-10 h-10 text-2xl rounded top-2 right-2 text-primary hover:bg-ndla-lilla"
+              className="absolute flex items-center justify-center w-10 h-10 text-2xl rounded-sm top-2 right-2 text-primary hover:bg-ndla-lilla"
             >
               &times;
             </button>
