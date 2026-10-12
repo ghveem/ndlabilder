@@ -5,7 +5,7 @@ Bildesøk for NDLA: React 18, Vite og Tailwind CSS 4 mot det opne image-api-et t
 ## Køyring
 
 - `npm install`, deretter `npm run dev` (http://localhost:5173)
-- `npm run build` byggjer til `dist/`. Mappa er i .gitignore, Vercel byggjer sjølv ved push til `main` (ndlabilder.vercel.app)
+- `npm run build` byggjer til `dist/`, `npm run preview` viser bygget lokalt. Mappa er i .gitignore, Vercel byggjer sjølv ved push til `main` (ndlabilder.vercel.app)
 - Det finst ingen testar eller lint-steg
 
 ## Struktur
@@ -21,7 +21,7 @@ Bildesøk for NDLA: React 18, Vite og Tailwind CSS 4 mot det opne image-api-et t
 - Filtrering skjer i API-et, ikkje i nettlesaren
 - `ai-generated` manglar på dei fleste bileta. Me kan difor berre filtrere *til* K.I.-genererte, ikkje *bort* frå dei
 - CloudFront framfor `api.ndla.no` mellomlagrar CORS-svar utan `Vary: Origin`. Appen sender `klient=<vertsnamn>` som omvegar. Fjern parameteren når feilen er retta, og oppdater README.md samtidig
-- Miniatyrbilete brukar `small.webp`
+- Miniatyrbilete brukar varianten med `size === "small"` frå API-et, med `imageUrl` som reserve
 
 ## Reglar
 
