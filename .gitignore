@@ -4,3 +4,10 @@ dist
 *.log
 .env*
 .vercel
+.env*
+!.env.example
+*.pem
+*.key
+.vscode/
+.idea/
+Thumbs.db
