@@ -20,7 +20,6 @@ Bildesøk for NDLA: React 18, Vite og Tailwind CSS 4 mot det opne image-api-et t
 - Query-parametrane brukar bindestrek (`page-size`, `model-released`, `ai-generated`, `query-fields`), og `page` byrjar på 1
 - Filtrering skjer i API-et, ikkje i nettlesaren
 - `ai-generated` manglar på dei fleste bileta. Me kan difor berre filtrere *til* K.I.-genererte, ikkje *bort* frå dei
-- CloudFront framfor `api.ndla.no` mellomlagrar CORS-svar utan `Vary: Origin`. Appen sender `klient=<vertsnamn>` som omvegar. Fjern parameteren når feilen er retta, og oppdater README.md samtidig
 - Miniatyrbilete brukar varianten med `size === "small"` frå API-et, med `imageUrl` som reserve
 
 ## Reglar

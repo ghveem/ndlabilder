@@ -57,8 +57,6 @@ Bilete og metadata blir henta frå det opne bilete-API-et til NDLA:
 https://api.ndla.no/image-api/v3/images
 ```
 
-**Kjend API-feil (CORS):** CloudFront framfor `api.ndla.no` lagrar `Access-Control-Allow-Origin` i mellomlageret utan `Vary: Origin`, så eit svar laga for eitt domene kan bli servert til eit anna og blokkert av nettlesaren. Appen sender difor `klient=<vertsnamn>` som ekstra parameter, slik at kvart domene får si eiga oppføring i mellomlageret. Feilen er meld til dei som driftar API-et (oktober 2026). Parameteren kan fjernast når feilen er retta.
-
 Dokumentasjon: [api.ndla.no/swagger](https://api.ndla.no/swagger?url=https://api.ndla.no/image-api/api-docs). Merk at query-parametrane brukar bindestrek (`page-size`, `model-released`, `ai-generated`), og at `page` byrjar på 1.
 
 ## 🚩 Lisens
