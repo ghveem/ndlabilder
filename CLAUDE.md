@@ -19,6 +19,7 @@ Bildesøk for NDLA: React 18, Vite og Tailwind CSS 4 mot det opne image-api-et t
 
 - Query-parametrane brukar bindestrek (`page-size`, `model-released`, `ai-generated`, `query-fields`), og `page` byrjar på 1
 - Filtrering skjer i API-et, ikkje i nettlesaren
+- Søkjeord, filter, språk og søkjefelt blir lagra i `search` og gjeld først når ein trykkjer Søk. Sortering, rekkjefølgje og treff per side gjeld med ein gong og set `page` til 1. Nye filter må difor inn i `startNewSearch`
 - `ai-generated` manglar på dei fleste bileta. Me kan difor berre filtrere *til* K.I.-genererte, ikkje *bort* frå dei
 - Miniatyrbilete brukar varianten med `size === "small"` frå API-et, med `imageUrl` som reserve
 
