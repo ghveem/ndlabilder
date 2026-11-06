@@ -11,7 +11,7 @@ Ein React + Vite + Tailwind-app som lèt deg søkje i bilete-API-et til NDLA og 
 - Filtrering (skjer i API-et, ikkje i nettlesaren):
   - ✅ Berre opne lisensar (utelèt `COPYRIGHTED`)
   - 📸 Berre modellklarerte bilete (`model-released=yes`)
-  - Berre KI-genererte bilete, heilt eller delvis (`ai-generated=Yes,Partial`). Dei fleste bileta manglar denne verdien, så det går ikkje an å filtrere *bort* KI-genererte bilete på ein påliteleg måte.
+  - Berre K.I.-genererte bilete, heilt eller delvis (`ai-generated=Yes,Partial`). Dei fleste bileta manglar denne verdien, så det går ikkje an å filtrere *bort* K.I.-genererte bilete på ein påliteleg måte.
   - Val av enkeltlisens (`license`)
   - Språk (`language`): bokmål, nynorsk, engelsk, nordsamisk, sørsamisk, kinesisk, tysk eller ukjent (`und`)
   - Kva felt søket gjeld (`query-fields`): tittel, alt-tekst, bilettekst, emneord, opphavsperson, bearbeidar eller rettshavar
@@ -65,4 +65,4 @@ Kjeldekoden er open og kan tilpassast. Bilete frå NDLA må brukast i samsvar me
 
 ---
 
-Laga mest med KI ✨
+Laga mest med K.I. ✨
