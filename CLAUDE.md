@@ -2,6 +2,12 @@
 
 Bildesøk for NDLA: React 18, Vite og Tailwind CSS 4 mot det opne image-api-et til NDLA. Grensesnittet er på nynorsk. Sjå README.md for funksjonar og API-detaljar.
 
+## Formål og avgrensingar
+
+- Mål: la NDLA-tilsette finne bilete i image-api-et og sjå lisens, opphav og modellklarering før dei brukar biletet
+- Appen les berre frå det opne API-et (GET). Ho lastar ikkje opp eller endrar bilete, og har ingen innlogging eller backend
+- K.I.-filteret kan berre vise K.I.-genererte bilete, ikkje skjule dei (sjå Fallgruver)
+
 ## Køyring
 
 - `npm install`, deretter `npm run dev` (http://localhost:5173)
