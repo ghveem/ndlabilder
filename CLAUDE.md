@@ -1,6 +1,6 @@
 # CLAUDE.md for ndlabilder
 
-Bildesøk for NDLA: React 18, Vite og Tailwind CSS 4 mot det opne image-api-et til NDLA. Grensesnittet er på nynorsk. Sjå README.md for funksjonar og API-detaljar.
+Bildesøk for NDLA: React 18, Vite, Tailwind CSS 4 og Axios mot det opne image-api-et til NDLA. Grensesnittet er på nynorsk. Sjå README.md for funksjonar og API-detaljar.
 
 ## Formål og avgrensingar
 
@@ -25,6 +25,8 @@ Bildesøk for NDLA: React 18, Vite og Tailwind CSS 4 mot det opne image-api-et t
 
 - Query-parametrane brukar bindestrek (`page-size`, `model-released`, `ai-generated`, `query-fields`), og `page` byrjar på 1
 - Filtrering skjer i API-et, ikkje i nettlesaren
+- «Berre opne lisensar» sender ingen `license`-parameter. API-et utelèt då `COPYRIGHTED` av seg sjølv. Inaktive bilete er skjulte med `inactive=false` til brukaren vel å vise dei
+- Sortering blir sendt som `sort=-felt` (fallande) eller `sort=felt` (stigande)
 - Søkjeord, filter, språk og søkjefelt blir lagra i `search` og gjeld først når ein trykkjer Søk. Sortering, rekkjefølgje og treff per side gjeld med ein gong og set `page` til 1. Nye filter må difor inn i `startNewSearch`
 - `ai-generated` manglar på dei fleste bileta. Me kan difor berre filtrere *til* K.I.-genererte, ikkje *bort* frå dei
 - Miniatyrbilete brukar varianten med `size === "small"` frå API-et, med `imageUrl` som reserve
