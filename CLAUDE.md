@@ -17,7 +17,7 @@ Bildesøk for NDLA: React 18, Vite, Tailwind CSS 4 og Axios mot det opne image-a
 ## Struktur
 
 - `src/ImageSearchApp.jsx`: heile appen (søk, filter, sortering, kort, dialog, nedlasting)
-- `src/index.css`: Tailwind-tema med NDLA-fargar og NDLA-Satoshi (Arial som reserve)
+- `src/index.css`: Tailwind-tema med NDLA-fargar. Fonten `NDLA-Satoshi` er sett i temaet, men ingen fontfil er lasta (`@font-face` manglar), så i praksis blir Arial brukt
 - `src/main.jsx` og `index.html`: oppstart
 - API: `https://api.ndla.no/image-api/v3/images`
 
