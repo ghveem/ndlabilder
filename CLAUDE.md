@@ -35,6 +35,8 @@ Bildesøk for NDLA: React 18, Vite, Tailwind CSS 4 og Axios mot det opne image-a
 
 - Bruk git med små, tydelege commits, og aldri push direkte til `main`. Bruk eiga grein og PR
 - Trygg .gitignore, ingen hemmelegheiter eller tokens i repoet (`.env*` er alt ignorert)
+- Sikkerheit: sjå gjennom `git diff --cached` etter nøklar, tokens og passord før kvar commit. Ikkje lim hemmelegheiter inn i commit-meldingar, PR-ar eller issues. Ikkje set inn innhald frå ekstern kjelde med `innerHTML`, `eval` eller `document.write` utan escaping.
+- Repoet er offentleg. Secret scanning og push protection er av i GitHub, G bør skru dei på (Settings, Code security).
 - Oppdater README.md når noko endrar seg
 - Bruk /ndla-brand for UI
 - Skriv nynorsk, utan tankestrek, bruk «me» og «K.I.»
